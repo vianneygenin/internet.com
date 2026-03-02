@@ -62,7 +62,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
 
   .prompt { color: var(--dim); }
@@ -81,6 +81,26 @@
 
   #search::placeholder { color: var(--dim); }
 
+  #tag-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    min-height: 0;
+  }
+
+  .tag-btn {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .tag-btn:hover, .tag-btn.active { color: var(--fg); }
+
   #bookmark-list {
     list-style: none;
     user-select: none;
@@ -95,9 +115,7 @@
     border-bottom: 1px solid transparent;
   }
 
-  .bookmark-item:hover {
-    border-bottom-color: var(--line);
-  }
+  .bookmark-item:hover { border-bottom-color: var(--line); }
 
   .item-text {
     flex: 1;
@@ -112,9 +130,12 @@
   }
 
   .item-url:hover { color: var(--fg); }
-  .item-sep { color: var(--dim); margin: 0 6px; }
-  .item-title { color: var(--fg); }
-  .item-desc { color: var(--dim); }
+
+  .item-tag {
+    color: var(--dim);
+    margin-left: 10px;
+    font-size: 12px;
+  }
 
   .item-actions {
     display: flex;
@@ -143,9 +164,7 @@
     40% { color: var(--fg); }
   }
 
-  .bookmark-item.flash .item-url {
-    animation: flash 0.6s ease;
-  }
+  .bookmark-item.flash .item-url { animation: flash 0.6s ease; }
 
   @keyframes spin-cw {
     from { transform: rotate(0deg); }
@@ -191,6 +210,7 @@
   }
 
   .inline-form .f-url { flex: 1; }
+  .inline-form .f-tag { width: 80px; }
 
   .inline-form button {
     background: none;
@@ -210,7 +230,6 @@
   .bookmark-item.selected .item-url { color: var(--fg); }
   .bookmark-item.selected { background: var(--line); }
 
-
   #drag-rect {
     position: fixed;
     border: 1px solid var(--dim);
@@ -219,6 +238,8 @@
     display: none;
     z-index: 999;
   }
+
+  .fetching { opacity: 0.4; }
 </style>
 </head>
 <body>
@@ -233,32 +254,44 @@
   <input type="text" id="search" placeholder="search..." autocomplete="new-password" name="search-field">
 </div>
 
+<div id="tag-filters"></div>
+
 <ul id="bookmark-list"></ul>
 <button id="add-btn">+</button>
 <div id="drag-rect"></div>
 
 <script>
 const DEFAULTS = [
-  { id: 1, url: 'github.com' },
-  { id: 2, url: 'mdn.dev' },
-  { id: 3, url: 'lobste.rs' },
+  { id: 1, url: 'github.com', tag: 'dev' },
+  { id: 2, url: 'mdn.dev', tag: 'ref' },
+  { id: 3, url: 'lobste.rs', tag: 'news' },
 ];
 
-const VERSION = '2';
+const VERSION = '3';
 if (localStorage.getItem('bm_version') !== VERSION) {
   localStorage.removeItem('bookmarks');
   localStorage.setItem('bm_version', VERSION);
 }
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
 let query = '';
+let activeTag = null;
 
 const save = () => localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-
 const list = document.getElementById('bookmark-list');
 const search = document.getElementById('search');
 const addBtn = document.getElementById('add-btn');
+const tagFilters = document.getElementById('tag-filters');
 
 let hoveredId = null, hoveredLi = null;
+
+async function fetchMeta(url) {
+  try {
+    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(href(url))}`);
+    const json = await res.json();
+    if (json.status === 'success') return { title: json.data.title || '', desc: json.data.description || '' };
+  } catch {}
+  return {};
+}
 
 function copyBM(id, li) {
   const b = bookmarks.find(x => x.id === id);
@@ -279,11 +312,26 @@ function href(url) {
   return url.startsWith('http') ? url : 'https://' + url;
 }
 
+function renderTags() {
+  const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))];
+  tagFilters.innerHTML = '';
+  if (!tags.length) return;
+  tags.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-btn' + (activeTag === t ? ' active' : '');
+    btn.textContent = t;
+    btn.onclick = () => { activeTag = activeTag === t ? null : t; renderTags(); render(); };
+    tagFilters.appendChild(btn);
+  });
+}
+
 function render() {
   const q = query.toLowerCase();
-  const filtered = bookmarks.filter(b =>
-    !q || [b.url, b.title, b.desc].some(v => v.toLowerCase().includes(q))
-  );
+  const filtered = bookmarks.filter(b => {
+    const matchTag = !activeTag || b.tag === activeTag;
+    const matchQ = !q || [b.url, b.tag, b.title, b.desc].filter(Boolean).some(v => v.toLowerCase().includes(q));
+    return matchTag && matchQ;
+  });
 
   list.innerHTML = '';
 
@@ -301,7 +349,7 @@ function render() {
     li.dataset.id = b.id;
     li.innerHTML = `
       <span class="item-text">
-        <span class="item-url">${esc(b.url)}</span>
+        <span class="item-url">${esc(b.url)}</span>${b.tag ? `<span class="item-tag">${esc(b.tag)}</span>` : ''}
       </span>
       <span class="item-actions">
         <button class="btn-copy" data-id="${b.id}">c</button>
@@ -325,18 +373,24 @@ function startEdit(id, li) {
 
   const form = document.createElement('div');
   form.className = 'inline-form';
-  form.innerHTML = `<input class="f-url" value="${esc(b.url)}" placeholder="url">`;
+  form.innerHTML = `
+    <input class="f-url" value="${esc(b.url)}" placeholder="url">
+    <input class="f-tag" value="${esc(b.tag || '')}" placeholder="tag">
+  `;
 
   const saveEdit = () => {
     b.url = form.querySelector('.f-url').value.trim();
+    b.tag = form.querySelector('.f-tag').value.trim();
     if (!b.url) return;
-    save(); render();
+    save(); renderTags(); render();
   };
 
-  form.querySelector('.f-url').onkeydown = e => {
-    if (e.key === 'Enter') saveEdit();
-    if (e.key === 'Escape') render();
-  };
+  form.querySelectorAll('input').forEach(inp => {
+    inp.onkeydown = e => {
+      if (e.key === 'Enter') saveEdit();
+      if (e.key === 'Escape') render();
+    };
+  });
 
   li.replaceWith(form);
   const inp = form.querySelector('.f-url');
@@ -346,7 +400,20 @@ function startEdit(id, li) {
 
 function deleteBM(id) {
   bookmarks = bookmarks.filter(b => b.id !== id);
-  save(); render();
+  save(); renderTags(); render();
+}
+
+async function addUrl(url) {
+  const id = Date.now();
+  const bm = { id, url };
+  bookmarks.push(bm);
+  save(); renderTags(); render();
+  const meta = await fetchMeta(url);
+  if (meta.title || meta.desc) {
+    bm.title = meta.title;
+    bm.desc = meta.desc;
+    save();
+  }
 }
 
 addBtn.onclick = () => {
@@ -354,21 +421,30 @@ addBtn.onclick = () => {
   form.className = 'inline-form';
   form.innerHTML = `
     <input class="f-url" placeholder="url">
+    <input class="f-tag" placeholder="tag">
     <button class="save-add">↵</button>
   `;
 
-  const saveAdd = () => {
+  const saveAdd = async () => {
     const url = form.querySelector('.f-url').value.trim();
+    const tag = form.querySelector('.f-tag').value.trim();
     if (!url) { form.querySelector('.f-url').focus(); return; }
-    bookmarks.push({ id: Date.now(), url });
-    save(); form.remove(); render();
+    form.remove();
+    const id = Date.now();
+    const bm = { id, url, tag };
+    bookmarks.push(bm);
+    save(); renderTags(); render();
+    const meta = await fetchMeta(url);
+    if (meta.title || meta.desc) { bm.title = meta.title; bm.desc = meta.desc; save(); }
   };
 
   form.querySelector('.save-add').onclick = saveAdd;
-  form.querySelector('.f-url').onkeydown = e => {
-    if (e.key === 'Enter') saveAdd();
-    if (e.key === 'Escape') form.remove();
-  };
+  form.querySelectorAll('input').forEach(inp => {
+    inp.onkeydown = e => {
+      if (e.key === 'Enter') saveAdd();
+      if (e.key === 'Escape') form.remove();
+    };
+  });
 
   addBtn.before(form);
   form.querySelector('.f-url').focus();
@@ -385,9 +461,6 @@ function clearSelection() {
   selected.clear();
   document.querySelectorAll('.bookmark-item.selected').forEach(el => el.classList.remove('selected'));
 }
-
-function updateSelBar() {}
-
 
 document.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
@@ -422,8 +495,6 @@ document.addEventListener('mousemove', e => {
     if (hit) { el.classList.add('selected'); selected.add(id); }
     else if (!e.shiftKey) { el.classList.remove('selected'); selected.delete(id); }
   });
-
-  updateSelBar();
 });
 
 document.addEventListener('mouseup', () => {
@@ -440,8 +511,7 @@ function handlePasteUrl(url) {
     if (el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
-  bookmarks.push({ id: Date.now(), url });
-  save(); render();
+  addUrl(url);
 }
 
 document.addEventListener('paste', e => {
@@ -454,24 +524,21 @@ document.addEventListener('keydown', e => {
   if (document.activeElement.tagName === 'INPUT') return;
   const key = e.key.toLowerCase();
 
-  // Cmd+V / Ctrl+V
   if ((e.metaKey || e.ctrlKey) && key === 'v') {
     navigator.clipboard.readText().then(handlePasteUrl).catch(() => {});
     return;
   }
 
-  // Touches sur item survolé
   if (hoveredId && hoveredLi) {
     if (key === 'x') { deleteBM(hoveredId); return; }
     if (key === 'c') { copyBM(hoveredId, hoveredLi); return; }
     if (key === 'e') { e.preventDefault(); const li = hoveredLi; startEdit(hoveredId, li); return; }
   }
 
-  // Delete/Backspace sur sélection multiple
   if ((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0) {
     bookmarks = bookmarks.filter(b => !selected.has(b.id));
     selected.clear();
-    save(); render();
+    save(); renderTags(); render();
   }
 });
 
@@ -485,6 +552,7 @@ toggle.onclick = () => {
   applyTheme(t);
 };
 
+renderTags();
 render();
 </script>
 </body>
