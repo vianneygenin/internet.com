@@ -202,6 +202,11 @@ const DEFAULTS = [
   { id: 3, url: 'lobste.rs' },
 ];
 
+const VERSION = '2';
+if (localStorage.getItem('bm_version') !== VERSION) {
+  localStorage.removeItem('bookmarks');
+  localStorage.setItem('bm_version', VERSION);
+}
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
 let query = '';
 
