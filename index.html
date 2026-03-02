@@ -315,10 +315,7 @@ function startEdit(id, li) {
 
   const form = document.createElement('div');
   form.className = 'inline-form';
-  form.innerHTML = `
-    <input class="f-url" value="${esc(b.url)}" placeholder="url">
-    <button class="save-edit">↵</button>
-  `;
+  form.innerHTML = `<input class="f-url" value="${esc(b.url)}" placeholder="url">`;
 
   const saveEdit = () => {
     b.url = form.querySelector('.f-url').value.trim();
@@ -326,7 +323,6 @@ function startEdit(id, li) {
     save(); render();
   };
 
-  form.querySelector('.save-edit').onclick = saveEdit;
   form.querySelector('.f-url').onkeydown = e => {
     if (e.key === 'Enter') saveEdit();
     if (e.key === 'Escape') render();
