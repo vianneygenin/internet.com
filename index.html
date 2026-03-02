@@ -338,7 +338,9 @@ function startEdit(id, li) {
   };
 
   li.replaceWith(form);
-  form.querySelector('.f-url').focus();
+  const inp = form.querySelector('.f-url');
+  inp.focus();
+  inp.setSelectionRange(inp.value.length, inp.value.length);
 }
 
 function deleteBM(id) {
