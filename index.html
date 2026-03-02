@@ -199,9 +199,9 @@
 
 <script>
 const DEFAULTS = [
-  { id: 1, url: 'github.com', title: 'GitHub', desc: 'Code hosting' },
-  { id: 2, url: 'mdn.dev', title: 'MDN Web Docs', desc: 'Web reference' },
-  { id: 3, url: 'lobste.rs', title: 'Lobsters', desc: 'Tech news' },
+  { id: 1, url: 'github.com' },
+  { id: 2, url: 'mdn.dev' },
+  { id: 3, url: 'lobste.rs' },
 ];
 
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
@@ -264,16 +264,12 @@ function startEdit(id, li) {
   form.className = 'inline-form';
   form.innerHTML = `
     <input class="f-url" value="${esc(b.url)}" placeholder="url">
-    <input class="f-title" value="${esc(b.title)}" placeholder="titre">
-    <input class="f-desc" value="${esc(b.desc)}" placeholder="description">
     <button class="save-edit">[ok]</button>
     <button class="cancel-edit">[annuler]</button>
   `;
 
   form.querySelector('.save-edit').onclick = () => {
     b.url = form.querySelector('.f-url').value.trim();
-    b.title = form.querySelector('.f-title').value.trim();
-    b.desc = form.querySelector('.f-desc').value.trim();
     if (!b.url) return;
     save(); render();
   };
@@ -294,18 +290,14 @@ addBtn.onclick = () => {
   form.className = 'inline-form';
   form.innerHTML = `
     <input class="f-url" placeholder="url">
-    <input class="f-title" placeholder="titre">
-    <input class="f-desc" placeholder="description">
     <button class="save-add">[ok]</button>
     <button class="cancel-add">[annuler]</button>
   `;
 
   form.querySelector('.save-add').onclick = () => {
     const url = form.querySelector('.f-url').value.trim();
-    const title = form.querySelector('.f-title').value.trim();
-    const desc = form.querySelector('.f-desc').value.trim();
     if (!url) { form.querySelector('.f-url').focus(); return; }
-    bookmarks.push({ id: Date.now(), url, title: title || url, desc });
+    bookmarks.push({ id: Date.now(), url });
     save(); render();
   };
 
