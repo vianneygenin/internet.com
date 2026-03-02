@@ -137,6 +137,16 @@
 
   .item-actions button:hover { color: var(--fg); }
 
+  @keyframes spin-cw {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .btn-copy.copied {
+    animation: spin-cw 0.4s ease;
+    color: var(--fg);
+  }
+
   #add-btn {
     background: none;
     border: none;
@@ -360,6 +370,7 @@ document.addEventListener('selectstart', e => e.preventDefault());
 document.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
   if (e.target.closest('button, input, .inline-form')) return;
+  if (document.activeElement && document.activeElement.tagName === 'INPUT') document.activeElement.blur();
   e.preventDefault();
   dragging = true;
   dragStart = { x: e.clientX, y: e.clientY };
