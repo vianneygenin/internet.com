@@ -428,7 +428,7 @@ document.addEventListener('keydown', e => {
   if (hoveredId && hoveredLi) {
     if (key === 'x') { deleteBM(hoveredId); return; }
     if (key === 'c') { copyBM(hoveredId, hoveredLi); return; }
-    if (key === 'e') { const li = hoveredLi; startEdit(hoveredId, li); return; }
+    if (key === 'e') { e.preventDefault(); const li = hoveredLi; startEdit(hoveredId, li); return; }
   }
 
   // Delete/Backspace sur sélection multiple
