@@ -354,6 +354,16 @@ function href(url) {
   return url.startsWith('http') ? url : 'https://' + url;
 }
 
+// Applique guessTag sur les bookmarks sans tag (utilise title/desc existants)
+let tagsAdded = false;
+bookmarks.forEach(b => {
+  if (!b.tag) {
+    const t = guessTag(b.url, { title: b.title, description: b.desc });
+    if (t) { b.tag = t; tagsAdded = true; }
+  }
+});
+if (tagsAdded) save();
+
 function renderTags() {
   const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))];
   tagFilters.innerHTML = '';
