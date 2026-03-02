@@ -585,22 +585,22 @@ toggle.onclick = () => {
 renderTags();
 render();
 
-// Fetch metadata pour les bookmarks qui n'en ont pas encore
-(async () => {
-  let changed = false;
-  for (const b of bookmarks) {
-    if (!b.title && !b.desc) {
-      const meta = await fetchMeta(b.url);
-      if (meta.title || meta.desc || meta.tag) {
-        b.title = meta.title;
-        b.desc = meta.desc;
-        if (!b.tag && meta.tag) b.tag = meta.tag;
-        changed = true;
-      }
+// Fetch metadata en parallèle pour les bookmarks sans données
+const toFetch = bookmarks.filter(b => !b.title && !b.desc);
+if (toFetch.length) {
+  Promise.all(toFetch.map(async b => {
+    const meta = await fetchMeta(b.url);
+    if (meta.title || meta.desc || meta.tag) {
+      b.title = meta.title;
+      b.desc = meta.desc;
+      if (!b.tag && meta.tag) b.tag = meta.tag;
+      return true;
     }
-  }
-  if (changed) { save(); renderTags(); render(); }
-})();
+    return false;
+  })).then(results => {
+    if (results.some(Boolean)) { save(); renderTags(); render(); }
+  });
+}
 </script>
 </body>
 </html>
