@@ -420,6 +420,14 @@ document.addEventListener('mouseup', () => {
   dragRect.style.display = 'none';
 });
 
+document.addEventListener('paste', e => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const url = (e.clipboardData || window.clipboardData).getData('text').trim();
+  if (!url) return;
+  bookmarks.push({ id: Date.now(), url });
+  save(); render();
+});
+
 document.addEventListener('keydown', e => {
   if (document.activeElement.tagName === 'INPUT') return;
   const key = e.key.toLowerCase();
