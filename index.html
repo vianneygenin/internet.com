@@ -182,29 +182,6 @@
   .bookmark-item.selected .item-url { color: var(--fg); }
   .bookmark-item.selected { background: var(--line); }
 
-  #sel-bar {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 0;
-    margin-bottom: 8px;
-    color: var(--dim);
-    font-size: 13px;
-  }
-
-  #sel-bar.visible { display: flex; }
-
-  #sel-del {
-    background: none;
-    border: none;
-    color: var(--dim);
-    font-family: monospace;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 0;
-  }
-
-  #sel-del:hover { color: var(--fg); }
 
   #drag-rect {
     position: fixed;
@@ -228,7 +205,6 @@
   <input type="text" id="search" placeholder="search...">
 </div>
 
-<div id="sel-bar"><span id="sel-count"></span><button id="sel-del">✕ supprimer</button><span id="sel-cancel" style="cursor:pointer" onclick="clearSelection()">annuler</span></div>
 <ul id="bookmark-list"></ul>
 <button id="add-btn">+</button>
 <div id="drag-rect"></div>
@@ -361,27 +337,13 @@ search.oninput = () => { query = search.value; render(); };
 let selected = new Set();
 let dragging = false, dragStart = null;
 const dragRect = document.getElementById('drag-rect');
-const selBar = document.getElementById('sel-bar');
-const selCount = document.getElementById('sel-count');
 
 function clearSelection() {
   selected.clear();
   document.querySelectorAll('.bookmark-item.selected').forEach(el => el.classList.remove('selected'));
-  selBar.classList.remove('visible');
 }
 
-function updateSelBar() {
-  if (selected.size === 0) { selBar.classList.remove('visible'); return; }
-  selBar.classList.add('visible');
-  selCount.textContent = selected.size + ' sélectionné' + (selected.size > 1 ? 's' : '');
-}
-
-document.getElementById('sel-del').onclick = () => {
-  bookmarks = bookmarks.filter(b => !selected.has(b.id));
-  selected.clear();
-  save(); render();
-  selBar.classList.remove('visible');
-};
+function updateSelBar() {}
 
 document.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
@@ -429,7 +391,6 @@ document.addEventListener('keydown', e => {
     bookmarks = bookmarks.filter(b => !selected.has(b.id));
     selected.clear();
     save(); render();
-    selBar.classList.remove('visible');
   }
 });
 
