@@ -290,9 +290,27 @@ async function fetchMeta(url) {
   try {
     const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(href(url))}`);
     const json = await res.json();
-    if (json.status === 'success') return { title: json.data.title || '', desc: json.data.description || '' };
+    if (json.status === 'success') {
+      const d = json.data;
+      return { title: d.title || '', desc: d.description || '', tag: guessTag(url, d) };
+    }
   } catch {}
   return {};
+}
+
+function guessTag(url, data) {
+  const text = (url + ' ' + (data.title || '') + ' ' + (data.description || '')).toLowerCase();
+  if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit/.test(text)) return 'dev';
+  if (/youtube|vimeo|twitch|dailymotion/.test(text)) return 'video';
+  if (/figma|dribbble|behance|awwwards|design|ui|ux/.test(text)) return 'design';
+  if (/news|hacker|lobster|reddit|twitter|x\.com|medium|substack/.test(text)) return 'news';
+  if (/amazon|ebay|etsy|shop|store/.test(text)) return 'shopping';
+  if (/spotify|soundcloud|deezer|music/.test(text)) return 'music';
+  if (/docs|documentation|reference|mdn|wiki/.test(text)) return 'ref';
+  if (/tool|convert|compress|edit|generator|calc/.test(text)) return 'outil';
+  if (/photo|image|img|unsplash|pexels/.test(text)) return 'image';
+  if (/ai|gpt|claude|openai|llm|model/.test(text)) return 'ai';
+  return null;
 }
 
 function copyBM(id, li) {
@@ -411,10 +429,11 @@ async function addUrl(url) {
   bookmarks.push(bm);
   save(); renderTags(); render();
   const meta = await fetchMeta(url);
-  if (meta.title || meta.desc) {
+  if (meta.title || meta.desc || meta.tag) {
     bm.title = meta.title;
     bm.desc = meta.desc;
-    save();
+    if (meta.tag) bm.tag = meta.tag;
+    save(); renderTags(); render();
   }
 }
 
@@ -436,7 +455,12 @@ addBtn.onclick = () => {
     bookmarks.push(bm);
     save(); renderTags(); render();
     const meta = await fetchMeta(url);
-    if (meta.title || meta.desc) { bm.title = meta.title; bm.desc = meta.desc; save(); }
+    if (meta.title || meta.desc || meta.tag) {
+      bm.title = meta.title;
+      bm.desc = meta.desc;
+      if (!bm.tag && meta.tag) bm.tag = meta.tag;
+      save(); renderTags(); render();
+    }
   };
 
   form.querySelectorAll('input').forEach(inp => {
