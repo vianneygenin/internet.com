@@ -162,9 +162,7 @@
     padding: 1px 0;
   }
 
-  .inline-form .f-url { width: 140px; }
-  .inline-form .f-title { width: 120px; }
-  .inline-form .f-desc { flex: 1; }
+  .inline-form .f-url { flex: 1; }
 
   .inline-form button {
     background: none;
@@ -264,17 +262,20 @@ function startEdit(id, li) {
   form.className = 'inline-form';
   form.innerHTML = `
     <input class="f-url" value="${esc(b.url)}" placeholder="url">
-    <button class="save-edit">[ok]</button>
-    <button class="cancel-edit">[annuler]</button>
+    <button class="save-edit">↵</button>
   `;
 
-  form.querySelector('.save-edit').onclick = () => {
+  const saveEdit = () => {
     b.url = form.querySelector('.f-url').value.trim();
     if (!b.url) return;
     save(); render();
   };
 
-  form.querySelector('.cancel-edit').onclick = () => render();
+  form.querySelector('.save-edit').onclick = saveEdit;
+  form.querySelector('.f-url').onkeydown = e => {
+    if (e.key === 'Enter') saveEdit();
+    if (e.key === 'Escape') render();
+  };
 
   li.replaceWith(form);
   form.querySelector('.f-url').focus();
@@ -290,18 +291,21 @@ addBtn.onclick = () => {
   form.className = 'inline-form';
   form.innerHTML = `
     <input class="f-url" placeholder="url">
-    <button class="save-add">[ok]</button>
-    <button class="cancel-add">[annuler]</button>
+    <button class="save-add">↵</button>
   `;
 
-  form.querySelector('.save-add').onclick = () => {
+  const saveAdd = () => {
     const url = form.querySelector('.f-url').value.trim();
     if (!url) { form.querySelector('.f-url').focus(); return; }
     bookmarks.push({ id: Date.now(), url });
     save(); render();
   };
 
-  form.querySelector('.cancel-add').onclick = () => form.remove();
+  form.querySelector('.save-add').onclick = saveAdd;
+  form.querySelector('.f-url').onkeydown = e => {
+    if (e.key === 'Enter') saveAdd();
+    if (e.key === 'Escape') form.remove();
+  };
 
   addBtn.before(form);
   form.querySelector('.f-url').focus();
