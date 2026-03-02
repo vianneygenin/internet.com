@@ -595,7 +595,7 @@ const faviconLight = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53
 const faviconEl = document.querySelector('link[rel="icon"]');
 const applyTheme = t => {
   document.body.classList.toggle('light', t === 'light');
-  faviconEl.href = t === 'light' ? faviconLight : faviconDark;
+  faviconEl.href = t === 'light' ? faviconDark : faviconLight;
 };
 applyTheme(localStorage.getItem('theme') || 'dark');
 toggle.onclick = () => {
