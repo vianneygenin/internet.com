@@ -262,17 +262,16 @@
 
 <script>
 const DEFAULTS = [
-  { id: 1, url: 'github.com', tag: 'dev' },
-  { id: 2, url: 'mdn.dev', tag: 'ref' },
-  { id: 3, url: 'lobste.rs', tag: 'news' },
+  { id: 1, url: 'autocatalogarchive.com' },
+  { id: 2, url: 'fmhy.net' },
+  { id: 3, url: 'emojipedia.org' },
+  { id: 4, url: 'www.imcdb.org' },
+  { id: 5, url: 'www.iloveimg.com' },
+  { id: 6, url: 'www.ilovepdf.com/fr' },
 ];
 
-const VERSION = '3';
-if (localStorage.getItem('bm_version') !== VERSION) {
-  localStorage.removeItem('bookmarks');
-  localStorage.setItem('bm_version', VERSION);
-}
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
+if (!bookmarks.length) bookmarks = DEFAULTS;
 let query = '';
 let activeTag = null;
 
