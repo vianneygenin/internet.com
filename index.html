@@ -7,6 +7,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { user-select: none; }
+  ::selection { background: transparent; }
 
   :root {
     --bg: #111;
@@ -349,9 +350,12 @@ function clearSelection() {
 
 function updateSelBar() {}
 
+document.addEventListener('selectstart', e => e.preventDefault());
+
 document.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
   if (e.target.closest('button, input, .inline-form')) return;
+  e.preventDefault();
   dragging = true;
   dragStart = { x: e.clientX, y: e.clientY };
   dragRect.style.display = 'none';
