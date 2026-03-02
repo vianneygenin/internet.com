@@ -248,8 +248,8 @@ function render() {
         <span class="item-url">${esc(b.url)}</span>
       </span>
       <span class="item-actions">
-        <button class="btn-edit" data-id="${b.id}">[e]</button>
-        <button class="btn-del" data-id="${b.id}">[x]</button>
+        <button class="btn-edit" data-id="${b.id}">e</button>
+        <button class="btn-del" data-id="${b.id}">✕</button>
       </span>
     `;
     li.querySelector('.item-text').onclick = () => window.open(href(b.url), '_blank');
