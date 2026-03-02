@@ -90,7 +90,7 @@
     align-items: baseline;
     gap: 0;
     padding: 3px 0;
-    cursor: pointer;
+    cursor: default;
     border-bottom: 1px solid transparent;
   }
 
@@ -105,14 +105,19 @@
     white-space: nowrap;
   }
 
-  .item-url { color: var(--dim); }
+  .item-url {
+    color: var(--dim);
+    cursor: pointer;
+  }
+
+  .item-url:hover { color: var(--fg); }
   .item-sep { color: var(--dim); margin: 0 6px; }
   .item-title { color: var(--fg); }
   .item-desc { color: var(--dim); }
 
   .item-actions {
     display: flex;
-    gap: 28px;
+    gap: 14px;
     opacity: 0;
     flex-shrink: 0;
     margin-left: 8px;
@@ -271,7 +276,7 @@ function render() {
         <button class="btn-del" data-id="${b.id}">✕</button>
       </span>
     `;
-    li.querySelector('.item-text').onclick = () => window.open(href(b.url), '_blank');
+    li.querySelector('.item-url').onclick = () => window.open(href(b.url), '_blank');
     li.querySelector('.btn-copy').onclick = e => { e.stopPropagation(); navigator.clipboard.writeText(href(b.url)); };
     li.querySelector('.btn-edit').onclick = e => { e.stopPropagation(); startEdit(b.id, li); };
     li.querySelector('.btn-del').onclick = e => { e.stopPropagation(); deleteBM(b.id); };
