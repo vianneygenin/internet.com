@@ -3,414 +3,333 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>internet.com</title>
+<title>INTERNET.COM</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg: #111;
+    --fg: #eee;
+    --dim: #666;
+    --line: #333;
+  }
+
+  body.light {
+    --bg: #fff;
+    --fg: #111;
+    --dim: #999;
+    --line: #ddd;
+  }
+
   body {
-    font-family: system-ui, sans-serif;
-    background: #ffffff;
-    color: #111111;
+    font-family: monospace;
+    background: var(--bg);
+    color: var(--fg);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 16px 64px;
   }
 
   header {
-    padding: 24px 32px 0;
     display: flex;
+    justify-content: space-between;
     align-items: baseline;
-    gap: 12px;
+    margin-bottom: 24px;
   }
 
-  header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  h1 {
+    font-size: 14px;
+    font-weight: normal;
+    letter-spacing: 0.05em;
   }
 
-  #count {
-    font-size: 13px;
-    color: #888;
+  #theme-toggle {
+    background: none;
+    border: none;
+    color: var(--fg);
+    font-family: monospace;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
   }
 
-  .toolbar {
-    padding: 16px 32px;
+  .search-bar {
     display: flex;
+    align-items: center;
     gap: 8px;
+    margin-bottom: 20px;
   }
+
+  .prompt { color: var(--dim); }
 
   #search {
-    flex: 1;
-    padding: 7px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg);
+    font-family: monospace;
     font-size: 14px;
-    font-family: inherit;
     outline: none;
+    width: 100%;
+    padding: 2px 0;
   }
 
-  #search:focus { border-color: #aaa; }
+  #search::placeholder { color: var(--dim); }
 
-  button {
-    padding: 7px 14px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #fff;
+  #bookmark-list {
+    list-style: none;
+  }
+
+  .bookmark-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    padding: 3px 0;
     cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    color: #111;
-    transition: background .1s;
+    border-bottom: 1px solid transparent;
   }
 
-  button:hover { background: #f5f5f5; }
-
-  #btn-add {
-    border-color: #111;
-    background: #111;
-    color: #fff;
-    white-space: nowrap;
+  .bookmark-item:hover {
+    border-bottom-color: var(--line);
   }
 
-  #btn-add:hover { background: #333; }
-
-  .filters {
-    padding: 0 32px 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .filter-btn {
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 20px;
-  }
-
-  .filter-btn.active {
-    background: #111;
-    color: #fff;
-    border-color: #111;
-  }
-
-  .grid {
-    padding: 0 32px 48px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-
-  .card {
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .card-name a {
-    font-size: 15px;
-    font-weight: 600;
-    color: #111;
-    text-decoration: none;
-  }
-
-  .card-name a:hover { text-decoration: underline; }
-
-  .card-url {
-    font-size: 12px;
-    color: #888;
+  .item-text {
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .card-desc {
-    font-size: 13px;
-    color: #444;
-    flex: 1;
-  }
+  .item-url { color: var(--dim); }
+  .item-sep { color: var(--dim); margin: 0 6px; }
+  .item-title { color: var(--fg); }
+  .item-desc { color: var(--dim); }
 
-  .card-footer {
+  .item-actions {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
+    gap: 6px;
+    opacity: 0;
+    flex-shrink: 0;
+    margin-left: 8px;
   }
 
-  .tag {
-    font-size: 11px;
-    background: #f0f0f0;
-    border: 1px solid #e0e0e0;
-    border-radius: 3px;
-    padding: 2px 7px;
-    color: #555;
-    flex: 1;
-  }
+  .bookmark-item:hover .item-actions { opacity: 1; }
 
-  .card-actions { display: flex; gap: 6px; }
-
-  .btn-edit, .btn-del {
-    padding: 3px 8px;
-    font-size: 12px;
-  }
-
-  .btn-del { color: #c00; }
-  .btn-del:hover { background: #fff0f0; border-color: #c00; }
-
-  .empty {
-    grid-column: 1 / -1;
-    padding: 48px;
-    text-align: center;
-    color: #aaa;
-  }
-
-  /* Modal */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.4);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .overlay.open { display: flex; }
-
-  .modal {
-    background: #fff;
-    border-radius: 8px;
-    padding: 28px;
-    width: 420px;
-    max-width: 90vw;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .modal h2 { font-size: 16px; font-weight: 600; }
-
-  .field { display: flex; flex-direction: column; gap: 4px; }
-
-  .field label { font-size: 12px; color: #666; font-weight: 500; }
-
-  .field input, .field select, .field textarea {
-    padding: 7px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+  .item-actions button {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: monospace;
     font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    resize: vertical;
+    cursor: pointer;
+    padding: 0;
   }
 
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: #aaa; }
+  .item-actions button:hover { color: var(--fg); }
 
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+  #add-btn {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: monospace;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 3px 0;
     margin-top: 4px;
+    display: block;
   }
 
-  #btn-save {
-    border-color: #111;
-    background: #111;
-    color: #fff;
+  #add-btn:hover { color: var(--fg); }
+
+  .inline-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--line);
   }
 
-  #btn-save:hover { background: #333; }
+  .inline-form input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg);
+    font-family: monospace;
+    font-size: 14px;
+    outline: none;
+    padding: 1px 0;
+  }
+
+  .inline-form .f-url { width: 140px; }
+  .inline-form .f-title { width: 120px; }
+  .inline-form .f-desc { flex: 1; }
+
+  .inline-form button {
+    background: none;
+    border: none;
+    color: var(--dim);
+    font-family: monospace;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .inline-form button:hover { color: var(--fg); }
+
+  .empty { color: var(--dim); padding: 6px 0; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>internet.com</h1>
-  <span id="count"></span>
+  <h1>INTERNET.COM</h1>
+  <button id="theme-toggle">[◐]</button>
 </header>
 
-<div class="toolbar">
-  <input id="search" type="search" placeholder="Rechercher...">
-  <button id="btn-add">+ Ajouter</button>
+<div class="search-bar">
+  <span class="prompt">&gt;</span>
+  <input type="text" id="search" placeholder="search...">
 </div>
 
-<div class="filters" id="filters"></div>
-
-<div class="grid" id="grid"></div>
-
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <h2 id="modal-title">Ajouter un site</h2>
-    <div class="field">
-      <label>Nom *</label>
-      <input id="f-name" type="text" placeholder="GitHub">
-    </div>
-    <div class="field">
-      <label>URL *</label>
-      <input id="f-url" type="url" placeholder="https://github.com">
-    </div>
-    <div class="field">
-      <label>Description</label>
-      <textarea id="f-desc" rows="2" placeholder="Hébergement de code..."></textarea>
-    </div>
-    <div class="field">
-      <label>Catégorie</label>
-      <select id="f-cat"></select>
-    </div>
-    <div class="modal-actions">
-      <button id="btn-cancel">Annuler</button>
-      <button id="btn-save">Enregistrer</button>
-    </div>
-  </div>
-</div>
+<ul id="bookmark-list"></ul>
+<button id="add-btn">+</button>
 
 <script>
-const CATS = ['Tech','Design','Dev','Actualités','Outils','Vidéo','Réseaux sociaux','Shopping','Musique','Autres'];
-
 const DEFAULTS = [
-  { id: 1, name: 'GitHub', url: 'https://github.com', desc: 'Hébergement de code et collaboration', cat: 'Dev', addedAt: '2024-01-01' },
-  { id: 2, name: 'MDN Web Docs', url: 'https://developer.mozilla.org', desc: 'Documentation web officielle', cat: 'Dev', addedAt: '2024-01-02' },
-  { id: 3, name: 'Hacker News', url: 'https://news.ycombinator.com', desc: 'Actualités tech et startups', cat: 'Actualités', addedAt: '2024-01-03' },
-  { id: 4, name: 'Figma', url: 'https://figma.com', desc: 'Outil de design UI/UX collaboratif', cat: 'Design', addedAt: '2024-01-04' },
+  { id: 1, url: 'github.com', title: 'GitHub', desc: 'Code hosting' },
+  { id: 2, url: 'mdn.dev', title: 'MDN Web Docs', desc: 'Web reference' },
+  { id: 3, url: 'lobste.rs', title: 'Lobsters', desc: 'Tech news' },
 ];
 
-// State
-let sites = JSON.parse(localStorage.getItem('sites') || 'null') ?? DEFAULTS;
-let activeFilter = 'Tous';
-let editId = null;
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
+let query = '';
 
-// Persist
-const save = () => localStorage.setItem('sites', JSON.stringify(sites));
+const save = () => localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 
-// DOM refs
-const grid = document.getElementById('grid');
-const filtersEl = document.getElementById('filters');
-const countEl = document.getElementById('count');
-const searchEl = document.getElementById('search');
-const overlay = document.getElementById('overlay');
-const fName = document.getElementById('f-name');
-const fUrl = document.getElementById('f-url');
-const fDesc = document.getElementById('f-desc');
-const fCat = document.getElementById('f-cat');
-const modalTitle = document.getElementById('modal-title');
+const list = document.getElementById('bookmark-list');
+const search = document.getElementById('search');
+const addBtn = document.getElementById('add-btn');
 
-// Populate category select
-CATS.forEach(c => {
-  const o = document.createElement('option');
-  o.value = c; o.textContent = c;
-  fCat.appendChild(o);
-});
-
-function getFiltered() {
-  const q = searchEl.value.trim().toLowerCase();
-  return sites.filter(s => {
-    const matchCat = activeFilter === 'Tous' || s.cat === activeFilter;
-    const matchSearch = !q || [s.name, s.url, s.desc].some(v => v.toLowerCase().includes(q));
-    return matchCat && matchSearch;
-  });
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function renderFilters() {
-  const cats = ['Tous', ...new Set(sites.map(s => s.cat))];
-  filtersEl.innerHTML = '';
-  cats.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (c === activeFilter ? ' active' : '');
-    btn.textContent = c;
-    btn.onclick = () => { activeFilter = c; renderFilters(); renderGrid(); };
-    filtersEl.appendChild(btn);
-  });
+function href(url) {
+  return url.startsWith('http') ? url : 'https://' + url;
 }
 
-function renderGrid() {
-  const list = getFiltered();
-  countEl.textContent = `${sites.length} site${sites.length !== 1 ? 's' : ''}`;
+function render() {
+  const q = query.toLowerCase();
+  const filtered = bookmarks.filter(b =>
+    !q || [b.url, b.title, b.desc].some(v => v.toLowerCase().includes(q))
+  );
 
-  if (!list.length) {
-    grid.innerHTML = '<p class="empty">Aucun site trouvé.</p>';
+  list.innerHTML = '';
+
+  if (!filtered.length) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'aucun résultat';
+    list.appendChild(li);
     return;
   }
 
-  grid.innerHTML = list.map(s => `
-    <div class="card">
-      <div class="card-name"><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a></div>
-      <div class="card-url">${esc(s.url)}</div>
-      <div class="card-desc">${esc(s.desc)}</div>
-      <div class="card-footer">
-        <span class="tag">${esc(s.cat)}</span>
-        <div class="card-actions">
-          <button class="btn-edit" onclick="openEdit(${s.id})">Modifier</button>
-          <button class="btn-del" onclick="deleteSite(${s.id})">Supprimer</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
+  filtered.forEach(b => {
+    const li = document.createElement('li');
+    li.className = 'bookmark-item';
+    li.innerHTML = `
+      <span class="item-text">
+        <span class="item-url">${esc(b.url)}</span>
+        <span class="item-sep">—</span>
+        <span class="item-title">${esc(b.title)}</span>
+        <span class="item-sep">—</span>
+        <span class="item-desc">${esc(b.desc)}</span>
+      </span>
+      <span class="item-actions">
+        <button class="btn-edit" data-id="${b.id}">[e]</button>
+        <button class="btn-del" data-id="${b.id}">[x]</button>
+      </span>
+    `;
+    li.querySelector('.item-text').onclick = () => window.open(href(b.url), '_blank');
+    li.querySelector('.btn-edit').onclick = e => { e.stopPropagation(); startEdit(b.id, li); };
+    li.querySelector('.btn-del').onclick = e => { e.stopPropagation(); deleteBM(b.id); };
+    list.appendChild(li);
+  });
 }
 
-function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function startEdit(id, li) {
+  const b = bookmarks.find(x => x.id === id);
+  if (!b) return;
+
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML = `
+    <input class="f-url" value="${esc(b.url)}" placeholder="url">
+    <input class="f-title" value="${esc(b.title)}" placeholder="titre">
+    <input class="f-desc" value="${esc(b.desc)}" placeholder="description">
+    <button class="save-edit">[ok]</button>
+    <button class="cancel-edit">[annuler]</button>
+  `;
+
+  form.querySelector('.save-edit').onclick = () => {
+    b.url = form.querySelector('.f-url').value.trim();
+    b.title = form.querySelector('.f-title').value.trim();
+    b.desc = form.querySelector('.f-desc').value.trim();
+    if (!b.url) return;
+    save(); render();
+  };
+
+  form.querySelector('.cancel-edit').onclick = () => render();
+
+  li.replaceWith(form);
+  form.querySelector('.f-url').focus();
 }
 
-function render() { renderFilters(); renderGrid(); }
-
-// Modal
-function openAdd() {
-  editId = null;
-  modalTitle.textContent = 'Ajouter un site';
-  fName.value = fUrl.value = fDesc.value = '';
-  fCat.value = CATS[0];
-  overlay.classList.add('open');
-  fName.focus();
-}
-
-function openEdit(id) {
-  const s = sites.find(x => x.id === id);
-  if (!s) return;
-  editId = id;
-  modalTitle.textContent = 'Modifier le site';
-  fName.value = s.name;
-  fUrl.value = s.url;
-  fDesc.value = s.desc;
-  fCat.value = s.cat;
-  overlay.classList.add('open');
-  fName.focus();
-}
-
-function closeModal() { overlay.classList.remove('open'); }
-
-function saveSite() {
-  const name = fName.value.trim();
-  const url = fUrl.value.trim();
-  if (!name || !url) { fName.focus(); return; }
-
-  if (editId) {
-    const s = sites.find(x => x.id === editId);
-    s.name = name; s.url = url; s.desc = fDesc.value.trim(); s.cat = fCat.value;
-  } else {
-    sites.push({ id: Date.now(), name, url, desc: fDesc.value.trim(), cat: fCat.value, addedAt: new Date().toISOString().slice(0,10) });
-  }
-
-  save(); closeModal(); render();
-}
-
-function deleteSite(id) {
-  if (!confirm('Supprimer ce site ?')) return;
-  sites = sites.filter(s => s.id !== id);
+function deleteBM(id) {
+  bookmarks = bookmarks.filter(b => b.id !== id);
   save(); render();
 }
 
-// Events
-document.getElementById('btn-add').onclick = openAdd;
-document.getElementById('btn-cancel').onclick = closeModal;
-document.getElementById('btn-save').onclick = saveSite;
-searchEl.oninput = renderGrid;
-overlay.onclick = e => { if (e.target === overlay) closeModal(); };
-document.onkeydown = e => { if (e.key === 'Escape') closeModal(); };
+addBtn.onclick = () => {
+  const form = document.createElement('div');
+  form.className = 'inline-form';
+  form.innerHTML = `
+    <input class="f-url" placeholder="url">
+    <input class="f-title" placeholder="titre">
+    <input class="f-desc" placeholder="description">
+    <button class="save-add">[ok]</button>
+    <button class="cancel-add">[annuler]</button>
+  `;
+
+  form.querySelector('.save-add').onclick = () => {
+    const url = form.querySelector('.f-url').value.trim();
+    const title = form.querySelector('.f-title').value.trim();
+    const desc = form.querySelector('.f-desc').value.trim();
+    if (!url) { form.querySelector('.f-url').focus(); return; }
+    bookmarks.push({ id: Date.now(), url, title: title || url, desc });
+    save(); render();
+  };
+
+  form.querySelector('.cancel-add').onclick = () => form.remove();
+
+  addBtn.before(form);
+  form.querySelector('.f-url').focus();
+};
+
+search.oninput = () => { query = search.value; render(); };
+
+// Theme
+const toggle = document.getElementById('theme-toggle');
+const applyTheme = t => { document.body.classList.toggle('light', t === 'light'); };
+applyTheme(localStorage.getItem('theme') || 'dark');
+toggle.onclick = () => {
+  const t = document.body.classList.contains('light') ? 'dark' : 'light';
+  localStorage.setItem('theme', t);
+  applyTheme(t);
+};
 
 render();
 </script>
