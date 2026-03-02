@@ -262,12 +262,12 @@
 
 <script>
 const DEFAULTS = [
-  { id: 1, url: 'autocatalogarchive.com' },
-  { id: 2, url: 'fmhy.net' },
-  { id: 3, url: 'emojipedia.org' },
-  { id: 4, url: 'www.imcdb.org' },
-  { id: 5, url: 'www.iloveimg.com' },
-  { id: 6, url: 'www.ilovepdf.com/fr' },
+  { id: 1, url: 'autocatalogarchive.com', title: 'Auto Catalog Archive', desc: 'Car catalog archive automobile vehicles models' },
+  { id: 2, url: 'fmhy.net', title: 'FMHY', desc: 'Free media resources tools links' },
+  { id: 3, url: 'emojipedia.org', title: 'Emojipedia', desc: 'Emoji reference meanings symbols' },
+  { id: 4, url: 'www.imcdb.org', title: 'Internet Movie Cars Database', desc: 'Cars vehicles automobiles in movies films voiture cinema' },
+  { id: 5, url: 'www.iloveimg.com', title: 'iLoveIMG', desc: 'Edit compress resize images photos pictures' },
+  { id: 6, url: 'www.ilovepdf.com/fr', title: 'iLovePDF', desc: 'PDF tools convert compress merge split documents' },
 ];
 
 const OLD_URLS = ['github.com', 'mdn.dev', 'lobste.rs'];
@@ -275,6 +275,14 @@ const stored = JSON.parse(localStorage.getItem('bookmarks') || 'null');
 const isOldData = stored && stored.every(b => OLD_URLS.includes(b.url));
 if (!stored || isOldData) localStorage.removeItem('bookmarks');
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
+
+// Merge les titres/desc des DEFAULTS sur les bookmarks existants sans metadata
+bookmarks.forEach(b => {
+  if (!b.title && !b.desc) {
+    const def = DEFAULTS.find(d => d.url === b.url);
+    if (def) { b.title = def.title; b.desc = def.desc; }
+  }
+});
 let query = '';
 let activeTag = null;
 
