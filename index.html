@@ -248,6 +248,19 @@ const list = document.getElementById('bookmark-list');
 const search = document.getElementById('search');
 const addBtn = document.getElementById('add-btn');
 
+let hoveredId = null, hoveredLi = null;
+
+function copyBM(id, li) {
+  const b = bookmarks.find(x => x.id === id);
+  if (!b) return;
+  navigator.clipboard.writeText(href(b.url));
+  const btn = li.querySelector('.btn-copy');
+  btn.classList.remove('copied');
+  void btn.offsetWidth;
+  btn.classList.add('copied');
+  btn.addEventListener('animationend', () => btn.classList.remove('copied'), { once: true });
+}
+
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -287,9 +300,11 @@ function render() {
       </span>
     `;
     li.querySelector('.item-url').onclick = () => window.open(href(b.url), '_blank');
-    li.querySelector('.btn-copy').onclick = e => { e.stopPropagation(); navigator.clipboard.writeText(href(b.url)); };
+    li.querySelector('.btn-copy').onclick = e => { e.stopPropagation(); copyBM(b.id, li); };
     li.querySelector('.btn-edit').onclick = e => { e.stopPropagation(); startEdit(b.id, li); };
     li.querySelector('.btn-del').onclick = e => { e.stopPropagation(); deleteBM(b.id); };
+    li.addEventListener('mouseenter', () => { hoveredId = b.id; hoveredLi = li; });
+    li.addEventListener('mouseleave', () => { hoveredId = null; hoveredLi = null; });
     list.appendChild(li);
   });
 }
@@ -409,9 +424,19 @@ document.addEventListener('mouseup', () => {
   dragRect.style.display = 'none';
 });
 
-// Delete key
 document.addEventListener('keydown', e => {
-  if ((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0 && document.activeElement.tagName !== 'INPUT') {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const key = e.key.toLowerCase();
+
+  // Touches sur item survolé
+  if (hoveredId && hoveredLi) {
+    if (key === 'x') { deleteBM(hoveredId); return; }
+    if (key === 'c') { copyBM(hoveredId, hoveredLi); return; }
+    if (key === 'e') { const li = hoveredLi; startEdit(hoveredId, li); return; }
+  }
+
+  // Delete/Backspace sur sélection multiple
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0) {
     bookmarks = bookmarks.filter(b => !selected.has(b.id));
     selected.clear();
     save(); render();
