@@ -349,7 +349,7 @@ addBtn.onclick = () => {
     const url = form.querySelector('.f-url').value.trim();
     if (!url) { form.querySelector('.f-url').focus(); return; }
     bookmarks.push({ id: Date.now(), url });
-    save(); render();
+    save(); form.remove(); render();
   };
 
   form.querySelector('.save-add').onclick = saveAdd;
