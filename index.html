@@ -428,9 +428,8 @@ document.addEventListener('mouseup', () => {
   dragRect.style.display = 'none';
 });
 
-document.addEventListener('paste', e => {
-  if (document.activeElement.tagName === 'INPUT') return;
-  const url = (e.clipboardData || window.clipboardData).getData('text').trim();
+function handlePasteUrl(url) {
+  url = url.trim();
   if (!url) return;
   const existing = bookmarks.find(b => b.url === url || href(b.url) === url || b.url === url.replace(/^https?:\/\//, ''));
   if (existing) {
@@ -440,11 +439,23 @@ document.addEventListener('paste', e => {
   }
   bookmarks.push({ id: Date.now(), url });
   save(); render();
+}
+
+document.addEventListener('paste', e => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  const url = (e.clipboardData || window.clipboardData).getData('text');
+  handlePasteUrl(url);
 });
 
 document.addEventListener('keydown', e => {
   if (document.activeElement.tagName === 'INPUT') return;
   const key = e.key.toLowerCase();
+
+  // Cmd+V / Ctrl+V
+  if ((e.metaKey || e.ctrlKey) && key === 'v') {
+    navigator.clipboard.readText().then(handlePasteUrl).catch(() => {});
+    return;
+  }
 
   // Touches sur item survolé
   if (hoveredId && hoveredLi) {
