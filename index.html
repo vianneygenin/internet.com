@@ -422,7 +422,6 @@ addBtn.onclick = () => {
   form.innerHTML = `
     <input class="f-url" placeholder="url">
     <input class="f-tag" placeholder="tag">
-    <button class="save-add">↵</button>
   `;
 
   const saveAdd = async () => {
@@ -438,7 +437,6 @@ addBtn.onclick = () => {
     if (meta.title || meta.desc) { bm.title = meta.title; bm.desc = meta.desc; save(); }
   };
 
-  form.querySelector('.save-add').onclick = saveAdd;
   form.querySelectorAll('input').forEach(inp => {
     inp.onkeydown = e => {
       if (e.key === 'Enter') saveAdd();
@@ -544,7 +542,13 @@ document.addEventListener('keydown', e => {
 
 // Theme
 const toggle = document.getElementById('theme-toggle');
-const applyTheme = t => { document.body.classList.toggle('light', t === 'light'); };
+const faviconDark = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48Y2lyY2xlIGN4PSc1MCcgY3k9JzUwJyByPSc0MCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjZmZmJyBzdHJva2Utd2lkdGg9JzEwJy8+PC9zdmc+';
+const faviconLight = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48Y2lyY2xlIGN4PSc1MCcgY3k9JzUwJyByPSc0MCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjMDAwJyBzdHJva2Utd2lkdGg9JzEwJy8+PC9zdmc+';
+const faviconEl = document.querySelector('link[rel="icon"]');
+const applyTheme = t => {
+  document.body.classList.toggle('light', t === 'light');
+  faviconEl.href = t === 'light' ? faviconLight : faviconDark;
+};
 applyTheme(localStorage.getItem('theme') || 'dark');
 toggle.onclick = () => {
   const t = document.body.classList.contains('light') ? 'dark' : 'light';
