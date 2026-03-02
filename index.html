@@ -308,16 +308,30 @@ async function fetchMeta(url) {
 
 function guessTag(url, data) {
   const text = (url + ' ' + (data.title || '') + ' ' + (data.description || '')).toLowerCase();
-  if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit/.test(text)) return 'dev';
-  if (/youtube|vimeo|twitch|dailymotion/.test(text)) return 'video';
-  if (/figma|dribbble|behance|awwwards|design|ui|ux/.test(text)) return 'design';
-  if (/news|hacker|lobster|reddit|twitter|x\.com|medium|substack/.test(text)) return 'news';
-  if (/amazon|ebay|etsy|shop|store/.test(text)) return 'shopping';
-  if (/spotify|soundcloud|deezer|music/.test(text)) return 'music';
-  if (/docs|documentation|reference|mdn|wiki/.test(text)) return 'ref';
-  if (/tool|convert|compress|edit|generator|calc/.test(text)) return 'outil';
-  if (/photo|image|img|unsplash|pexels/.test(text)) return 'image';
-  if (/ai|gpt|claude|openai|llm|model/.test(text)) return 'ai';
+  if (/openai|anthropic|claude|chatgpt|gemini|mistral|llm|gpt|midjourney|stable.diffusion|huggingface/.test(text)) return 'ai';
+  if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit|raycast|cursor|vscode/.test(text)) return 'dev';
+  if (/imcdb|car|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'voiture';
+  if (/youtube|vimeo|twitch|dailymotion|streaming|watch|film|movie|cinema|imdb|series|trailer/.test(text)) return 'video';
+  if (/figma|dribbble|behance|awwwards|design|ui|ux|branding|typography|font|colour|palette/.test(text)) return 'design';
+  if (/photo|photography|image|unsplash|pexels|pixabay|flickr|lightroom|camera/.test(text)) return 'photo';
+  if (/reddit|twitter|x\.com|instagram|tiktok|linkedin|mastodon|bluesky|social/.test(text)) return 'social';
+  if (/hacker.news|lobste|techcrunch|theverge|wired|arstechnica|news|actualit/.test(text)) return 'news';
+  if (/spotify|soundcloud|deezer|bandcamp|music|musique|song|album|artist|playlist/.test(text)) return 'musique';
+  if (/amazon|ebay|etsy|shop|store|buy|achat|boutique|market/.test(text)) return 'shopping';
+  if (/docs|documentation|reference|mdn|wiki|manual|guide|spec/.test(text)) return 'ref';
+  if (/convert|compress|resize|edit|generate|tool|outil|calc|pdf|img|merge/.test(text)) return 'outil';
+  if (/game|gaming|steam|jeu|jouer|playstation|xbox|nintendo|esport/.test(text)) return 'jeux';
+  if (/crypto|bitcoin|ethereum|blockchain|nft|defi|coin/.test(text)) return 'crypto';
+  if (/learn|course|tutorial|formation|apprendre|udemy|coursera|education/.test(text)) return 'apprendre';
+  if (/art|illustration|creative|gallery|museum|exhibit/.test(text)) return 'art';
+  if (/finance|invest|stock|bourse|money|argent|trading|bank/.test(text)) return 'finance';
+  if (/sport|football|basket|tennis|nba|nfl|fifa|score/.test(text)) return 'sport';
+  if (/travel|voyage|hotel|flight|airbnb|booking|map|carte/.test(text)) return 'voyage';
+  if (/food|recette|cuisine|restaurant|cook|recipe/.test(text)) return 'cuisine';
+  if (/science|research|paper|study|nasa|physics|biology/.test(text)) return 'science';
+  if (/security|hack|pentest|cyber|vulnerability|ctf/.test(text)) return 'sécurité';
+  if (/productivity|notion|obsidian|todo|task|calendar|planning/.test(text)) return 'productivité';
+  if (/medium|substack|blog|newsletter|article|write/.test(text)) return 'lecture';
   return null;
 }
 
