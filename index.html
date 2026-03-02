@@ -270,8 +270,11 @@ const DEFAULTS = [
   { id: 6, url: 'www.ilovepdf.com/fr' },
 ];
 
+const OLD_URLS = ['github.com', 'mdn.dev', 'lobste.rs'];
+const stored = JSON.parse(localStorage.getItem('bookmarks') || 'null');
+const isOldData = stored && stored.every(b => OLD_URLS.includes(b.url));
+if (!stored || isOldData) localStorage.removeItem('bookmarks');
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || 'null') ?? DEFAULTS;
-if (!bookmarks.length) bookmarks = DEFAULTS;
 let query = '';
 let activeTag = null;
 
