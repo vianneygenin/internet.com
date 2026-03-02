@@ -584,6 +584,23 @@ toggle.onclick = () => {
 
 renderTags();
 render();
+
+// Fetch metadata pour les bookmarks qui n'en ont pas encore
+(async () => {
+  let changed = false;
+  for (const b of bookmarks) {
+    if (!b.title && !b.desc) {
+      const meta = await fetchMeta(b.url);
+      if (meta.title || meta.desc || meta.tag) {
+        b.title = meta.title;
+        b.desc = meta.desc;
+        if (!b.tag && meta.tag) b.tag = meta.tag;
+        changed = true;
+      }
+    }
+  }
+  if (changed) { save(); renderTags(); render(); }
+})();
 </script>
 </body>
 </html>
