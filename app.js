@@ -1,4 +1,5 @@
 const IS_EXT = typeof chrome !== 'undefined' && !!chrome?.storage?.local;
+if (IS_EXT) document.body.classList.add('ext');
 
 const DEFAULTS = [
   { id: 1, url: 'autocatalogarchive.com', title: 'Auto Catalog Archive', desc: 'Car catalog archive automobile vehicles models' },
