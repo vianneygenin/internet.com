@@ -250,7 +250,7 @@
 
 <header>
   <h1>INTERNET.COM</h1>
-  <div style="display:flex;gap:0.5rem">
+  <div style="display:flex;gap:1rem">
     <button id="sort-btn">></button>
     <button id="theme-toggle">●</button>
   </div>
@@ -293,7 +293,7 @@ bookmarks.forEach(b => {
 let query = '';
 let activeTag = null;
 let sortMode = 0; // 0=↑ ancien→récent, 1=↓ récent→ancien, 2=< court→long, 3=> long→court
-const SORT_ROTATIONS = ['-90deg', '90deg', '180deg', '0deg']; // ∧ ∨ < >
+const SORT_ROTATIONS = ['90deg', '-90deg', '180deg', '0deg']; // ∨ ∧ < >
 
 const save = () => localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 const list = document.getElementById('bookmark-list');
