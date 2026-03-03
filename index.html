@@ -365,7 +365,11 @@ if (tagsChanged) save();
 function renderTags() {
   const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))];
   tagFilters.innerHTML = '';
-  if (!tags.length) return;
+  const all = document.createElement('button');
+  all.className = 'tag-btn' + (!activeTag ? ' active' : '');
+  all.textContent = 'all';
+  all.onclick = () => { activeTag = null; renderTags(); render(); };
+  tagFilters.appendChild(all);
   tags.forEach(t => {
     const btn = document.createElement('button');
     btn.className = 'tag-btn' + (activeTag === t ? ' active' : '');
