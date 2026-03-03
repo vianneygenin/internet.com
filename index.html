@@ -315,28 +315,28 @@ function guessTag(url, data) {
   const text = (url + ' ' + (data.title || '') + ' ' + (data.description || '')).toLowerCase();
   if (/openai|anthropic|claude|chatgpt|gemini|mistral|llm|gpt|midjourney|stable.diffusion|huggingface/.test(text)) return 'ai';
   if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit|raycast|cursor|vscode/.test(text)) return 'dev';
-  if (/imcdb|autocatalog|car catalog|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'voiture';
+  if (/imcdb|autocatalog|car catalog|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'cars';
   if (/movix|youtube|vimeo|twitch|dailymotion|streaming|film|movie|cinema|imdb|series|trailer/.test(text)) return 'video';
-  if (/spotify|soundcloud|deezer|bandcamp|whosampled|sampled|music|musique|song|album|artist|playlist/.test(text)) return 'musique';
-  if (/convert|compress|resize|ilovepdf|iloveimg|tool|outil|calc|pdf|merge|split documents/.test(text)) return 'outil';
+  if (/spotify|soundcloud|deezer|bandcamp|whosampled|sampled|music|musique|song|album|artist|playlist/.test(text)) return 'music';
+  if (/convert|compress|resize|ilovepdf|iloveimg|tool|outil|calc|pdf|merge|split documents/.test(text)) return 'tools';
   if (/figma|dribbble|behance|awwwards|design|ui|ux|branding|typography|colour|palette/.test(text)) return 'design';
   if (/photo|photography|unsplash|pexels|pixabay|flickr|lightroom|camera/.test(text)) return 'photo';
   if (/reddit|twitter|x\.com|instagram|tiktok|linkedin|mastodon|bluesky|social/.test(text)) return 'social';
   if (/hacker.news|lobste|techcrunch|theverge|wired|arstechnica|news|actualit/.test(text)) return 'news';
   if (/amazon|ebay|etsy|shop|store|buy|achat|boutique|market/.test(text)) return 'shopping';
   if (/docs|documentation|reference|mdn|wiki|manual|guide|spec/.test(text)) return 'ref';
-  if (/game|gaming|steam|jeu|jouer|playstation|xbox|nintendo|esport/.test(text)) return 'jeux';
+  if (/game|gaming|steam|jeu|jouer|playstation|xbox|nintendo|esport/.test(text)) return 'games';
   if (/crypto|bitcoin|ethereum|blockchain|nft|defi|coin/.test(text)) return 'crypto';
-  if (/learn|course|tutorial|formation|apprendre|udemy|coursera|education/.test(text)) return 'apprendre';
+  if (/learn|course|tutorial|formation|apprendre|udemy|coursera|education/.test(text)) return 'learn';
   if (/art|illustration|creative|gallery|museum|exhibit/.test(text)) return 'art';
   if (/finance|invest|stock|bourse|money|argent|trading|bank/.test(text)) return 'finance';
   if (/sport|football|basket|tennis|nba|nfl|fifa|score/.test(text)) return 'sport';
-  if (/travel|voyage|hotel|flight|airbnb|booking|map|carte/.test(text)) return 'voyage';
-  if (/food|recette|cuisine|restaurant|cook|recipe/.test(text)) return 'cuisine';
+  if (/travel|voyage|hotel|flight|airbnb|booking|map|carte/.test(text)) return 'travel';
+  if (/food|recette|cuisine|restaurant|cook|recipe/.test(text)) return 'food';
   if (/science|research|paper|study|nasa|physics|biology/.test(text)) return 'science';
-  if (/security|hack|pentest|cyber|vulnerability|ctf/.test(text)) return 'sécurité';
-  if (/productivity|notion|obsidian|todo|task|calendar|planning/.test(text)) return 'productivité';
-  if (/medium|substack|blog|newsletter|article|write/.test(text)) return 'lecture';
+  if (/security|hack|pentest|cyber|vulnerability|ctf/.test(text)) return 'security';
+  if (/productivity|notion|obsidian|todo|task|calendar|planning/.test(text)) return 'productivity';
+  if (/medium|substack|blog|newsletter|article|write/.test(text)) return 'blog';
   return null;
 }
 
