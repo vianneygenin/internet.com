@@ -48,7 +48,7 @@
     letter-spacing: 0.05em;
   }
 
-  #theme-toggle {
+  #theme-toggle, #sort-btn {
     background: none;
     border: none;
     color: var(--fg);
@@ -56,7 +56,11 @@
     font-size: 14px;
     cursor: pointer;
     padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
+  #sort-btn { transition: transform 0.15s; }
 
   .search-bar {
     display: flex;
@@ -247,7 +251,7 @@
 <header>
   <h1>INTERNET.COM</h1>
   <div style="display:flex;gap:0.5rem">
-    <button id="sort-btn">∧</button>
+    <button id="sort-btn">></button>
     <button id="theme-toggle">●</button>
   </div>
 </header>
@@ -289,7 +293,7 @@ bookmarks.forEach(b => {
 let query = '';
 let activeTag = null;
 let sortMode = 0; // 0=↑ ancien→récent, 1=↓ récent→ancien, 2=< court→long, 3=> long→court
-const SORT_ICONS = ['∧', '∨', '<', '>'];
+const SORT_ROTATIONS = ['-90deg', '90deg', '180deg', '0deg']; // ∧ ∨ < >
 
 const save = () => localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 const list = document.getElementById('bookmark-list');
@@ -636,9 +640,11 @@ toggle.onclick = () => {
   applyTheme(t);
 };
 const sortBtn = document.getElementById('sort-btn');
+const updateSortBtn = () => { sortBtn.style.transform = `rotate(${SORT_ROTATIONS[sortMode]})`; };
+updateSortBtn();
 sortBtn.onclick = () => {
   sortMode = (sortMode + 1) % 4;
-  sortBtn.textContent = SORT_ICONS[sortMode];
+  updateSortBtn();
   render();
 };
 
