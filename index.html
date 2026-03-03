@@ -401,7 +401,7 @@ function render() {
     li.dataset.id = b.id;
     li.innerHTML = `
       <span class="item-text">
-        <span class="item-url">${esc(b.url)}</span>${b.tag ? `<span class="item-tag">${esc(b.tag)}</span>` : ''}
+        <span class="item-url">${esc(b.url)}</span>
       </span>
       <span class="item-actions">
         <button class="btn-copy" data-id="${b.id}">c</button>
