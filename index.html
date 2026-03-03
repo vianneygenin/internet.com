@@ -313,30 +313,42 @@ async function fetchMeta(url) {
 
 function guessTag(url, data) {
   const text = (url + ' ' + (data.title || '') + ' ' + (data.description || '')).toLowerCase();
-  if (/openai|anthropic|claude|chatgpt|gemini|mistral|llm|gpt|midjourney|stable.diffusion|huggingface/.test(text)) return 'ai';
-  if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit|raycast|cursor|vscode/.test(text)) return 'dev';
-  if (/imcdb|autocatalog|car catalog|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'cars';
-  if (/movix|youtube|vimeo|twitch|dailymotion|streaming|film|movie|cinema|imdb|series|trailer/.test(text)) return 'video';
-  if (/spotify|soundcloud|deezer|bandcamp|whosampled|sampled|music|musique|song|album|artist|playlist/.test(text)) return 'music';
-  if (/convert|compress|resize|ilovepdf|iloveimg|tool|outil|calc|pdf|merge|split documents/.test(text)) return 'tools';
-  if (/figma|dribbble|behance|awwwards|design|ui|ux|branding|typography|colour|palette/.test(text)) return 'design';
+  if (/openai|anthropic|claude|chatgpt|gemini|mistral|llm|gpt|midjourney|stable diffusion|huggingface|ollama|perplexity/.test(text)) return 'ai';
+  if (/anime|manga|crunchyroll|anilist|myanimelist|webtoon/.test(text)) return 'anime';
+  if (/archive|wayback|catalog archive|autocatalog/.test(text)) return 'archive';
+  if (/medium|substack|newsletter|article|write\.as|ghost\.io/.test(text)) return 'blog';
+  if (/goodreads|ebook|kindle|gutenberg|livre|book|read|lire/.test(text)) return 'books';
+  if (/imcdb|car catalog|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear|carsandbids|bringatrailer/.test(text)) return 'cars';
+  if (/color|colour|palette|hex|coolors|paletton|colorhunt/.test(text)) return 'color';
+  if (/crypto|bitcoin|ethereum|blockchain|nft|defi|coinmarketcap/.test(text)) return 'crypto';
+  if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit|raycast|cursor|vscode|devdocs/.test(text)) return 'dev';
+  if (/figma|dribbble|behance|awwwards|design|ui kit|ux|branding/.test(text)) return 'design';
+  if (/emoji|emojipedia/.test(text)) return 'emoji';
+  if (/finance|invest|stock|bourse|trading|bank|etf|portfolio/.test(text)) return 'finance';
+  if (/movix|letterboxd|netflix|allocin|imdb|film|movie|cinema|series|trailer/.test(text)) return 'film';
+  if (/food|recette|cuisine|restaurant|cook|recipe|marmiton/.test(text)) return 'food';
+  if (/dafont|fontsquirrel|google fonts|font|typeface|typography/.test(text)) return 'fonts';
+  if (/game|gaming|steam|itch\.io|playstation|xbox|nintendo|esport|twitch/.test(text)) return 'games';
+  if (/hardware|cpu|gpu|raspberry|arduino|benchmark|pcpartpicker/.test(text)) return 'hardware';
+  if (/health|fitness|workout|exercise|meditation|nutrition|santé/.test(text)) return 'health';
+  if (/heroicons|flaticon|iconify|noun project|icon|svg icons/.test(text)) return 'icons';
+  if (/learn|course|tutorial|udemy|coursera|education|formation|skillshare|khan/.test(text)) return 'learn';
+  if (/google maps|openstreetmap|geograph|map|cartograph/.test(text)) return 'maps';
+  if (/spotify|soundcloud|deezer|bandcamp|whosampled|sampled|music|song|album|artist|playlist/.test(text)) return 'music';
+  if (/hacker news|lobste|techcrunch|theverge|wired|arstechnica|news/.test(text)) return 'news';
   if (/photo|photography|unsplash|pexels|pixabay|flickr|lightroom|camera/.test(text)) return 'photo';
-  if (/reddit|twitter|x\.com|instagram|tiktok|linkedin|mastodon|bluesky|social/.test(text)) return 'social';
-  if (/hacker.news|lobste|techcrunch|theverge|wired|arstechnica|news|actualit/.test(text)) return 'news';
-  if (/amazon|ebay|etsy|shop|store|buy|achat|boutique|market/.test(text)) return 'shopping';
-  if (/docs|documentation|reference|mdn|wiki|manual|guide|spec/.test(text)) return 'ref';
-  if (/game|gaming|steam|jeu|jouer|playstation|xbox|nintendo|esport/.test(text)) return 'games';
-  if (/crypto|bitcoin|ethereum|blockchain|nft|defi|coin/.test(text)) return 'crypto';
-  if (/learn|course|tutorial|formation|apprendre|udemy|coursera|education/.test(text)) return 'learn';
-  if (/art|illustration|creative|gallery|museum|exhibit/.test(text)) return 'art';
-  if (/finance|invest|stock|bourse|money|argent|trading|bank/.test(text)) return 'finance';
+  if (/podcast|episode|overcast|spotify podcast/.test(text)) return 'podcast';
+  if (/productivity|notion|obsidian|todo|task|calendar|planning|roam/.test(text)) return 'productivity';
+  if (/docs|documentation|reference|mdn|wiki|manual|spec/.test(text)) return 'ref';
+  if (/science|research|paper|study|nasa|physics|biology|arxiv/.test(text)) return 'science';
+  if (/security|hack|pentest|cyber|vulnerability|ctf|exploit/.test(text)) return 'security';
+  if (/amazon|ebay|etsy|shop|store|buy|boutique|market/.test(text)) return 'shopping';
+  if (/reddit|twitter|x\.com|instagram|tiktok|linkedin|mastodon|bluesky/.test(text)) return 'social';
   if (/sport|football|basket|tennis|nba|nfl|fifa|score/.test(text)) return 'sport';
-  if (/travel|voyage|hotel|flight|airbnb|booking|map|carte/.test(text)) return 'travel';
-  if (/food|recette|cuisine|restaurant|cook|recipe/.test(text)) return 'food';
-  if (/science|research|paper|study|nasa|physics|biology/.test(text)) return 'science';
-  if (/security|hack|pentest|cyber|vulnerability|ctf/.test(text)) return 'security';
-  if (/productivity|notion|obsidian|todo|task|calendar|planning/.test(text)) return 'productivity';
-  if (/medium|substack|blog|newsletter|article|write/.test(text)) return 'blog';
+  if (/convert|compress|resize|ilovepdf|iloveimg|calc|pdf|merge|split/.test(text)) return 'tools';
+  if (/travel|voyage|hotel|flight|airbnb|booking/.test(text)) return 'travel';
+  if (/youtube|vimeo|dailymotion|streaming|video/.test(text)) return 'video';
+  if (/3d|blender|maya|cinema4d|sketchfab|cad/.test(text)) return '3d';
   return null;
 }
 
@@ -368,7 +380,7 @@ bookmarks.forEach(b => {
 if (tagsChanged) save();
 
 function renderTags() {
-  const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))];
+  const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))].sort();
   tagFilters.innerHTML = '';
   const all = document.createElement('button');
   all.className = 'tag-btn' + (!activeTag ? ' active' : '');
