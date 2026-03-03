@@ -371,6 +371,10 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function cleanUrl(url) {
+  return url.trim().replace(/\/+$/, '');
+}
+
 function href(url) {
   return url.startsWith('http') ? url : 'https://' + url;
 }
@@ -427,7 +431,7 @@ function render() {
     li.dataset.id = b.id;
     li.innerHTML = `
       <span class="item-text">
-        <span class="item-url">${esc(b.url.replace(/^(https?:\/\/)?(www\.)?/, ''))}</span>
+        <span class="item-url">${esc(cleanUrl(b.url).replace(/^(https?:\/\/)?(www\.)?/, ''))}</span>
       </span>
       <span class="item-actions">
         <button class="btn-copy" data-id="${b.id}">c</button>
@@ -457,7 +461,7 @@ function startEdit(id, li) {
   `;
 
   const saveEdit = () => {
-    b.url = form.querySelector('.f-url').value.trim();
+    b.url = cleanUrl(form.querySelector('.f-url').value);
     b.tag = form.querySelector('.f-tag').value.trim();
     if (!b.url) return;
     save(); renderTags(); render();
@@ -504,7 +508,7 @@ addBtn.onclick = () => {
   `;
 
   const saveAdd = async () => {
-    const url = form.querySelector('.f-url').value.trim();
+    const url = cleanUrl(form.querySelector('.f-url').value);
     const tag = form.querySelector('.f-tag').value.trim();
     if (!url) { form.querySelector('.f-url').focus(); return; }
     form.remove();
@@ -585,7 +589,7 @@ document.addEventListener('mouseup', () => {
 });
 
 function handlePasteUrl(url) {
-  url = url.trim();
+  url = cleanUrl(url);
   if (!url) return;
   const existing = bookmarks.find(b => b.url === url || href(b.url) === url || b.url === url.replace(/^https?:\/\//, ''));
   if (existing) {
