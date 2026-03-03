@@ -247,7 +247,7 @@
 <header>
   <h1>INTERNET.COM</h1>
   <div style="display:flex;gap:0.5rem">
-    <button id="sort-btn">↑</button>
+    <button id="sort-btn">∧</button>
     <button id="theme-toggle">●</button>
   </div>
 </header>
@@ -289,7 +289,7 @@ bookmarks.forEach(b => {
 let query = '';
 let activeTag = null;
 let sortMode = 0; // 0=↑ ancien→récent, 1=↓ récent→ancien, 2=< court→long, 3=> long→court
-const SORT_ICONS = ['↑', '↓', '<', '>'];
+const SORT_ICONS = ['∧', '∨', '<', '>'];
 
 const save = () => localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
 const list = document.getElementById('bookmark-list');
