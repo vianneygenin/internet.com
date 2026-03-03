@@ -310,16 +310,16 @@ function guessTag(url, data) {
   const text = (url + ' ' + (data.title || '') + ' ' + (data.description || '')).toLowerCase();
   if (/openai|anthropic|claude|chatgpt|gemini|mistral|llm|gpt|midjourney|stable.diffusion|huggingface/.test(text)) return 'ai';
   if (/github|gitlab|stackoverflow|codepen|npm|vercel|netlify|dev\.to|replit|raycast|cursor|vscode/.test(text)) return 'dev';
-  if (/imcdb|car|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'voiture';
-  if (/youtube|vimeo|twitch|dailymotion|streaming|watch|film|movie|cinema|imdb|series|trailer/.test(text)) return 'video';
-  if (/figma|dribbble|behance|awwwards|design|ui|ux|branding|typography|font|colour|palette/.test(text)) return 'design';
-  if (/photo|photography|image|unsplash|pexels|pixabay|flickr|lightroom|camera/.test(text)) return 'photo';
+  if (/imcdb|autocatalog|car catalog|voiture|automobile|automotive|vehicle|motorsport|supercars|topgear/.test(text)) return 'voiture';
+  if (/movix|youtube|vimeo|twitch|dailymotion|streaming|film|movie|cinema|imdb|series|trailer/.test(text)) return 'video';
+  if (/spotify|soundcloud|deezer|bandcamp|whosampled|sampled|music|musique|song|album|artist|playlist/.test(text)) return 'musique';
+  if (/convert|compress|resize|ilovepdf|iloveimg|tool|outil|calc|pdf|merge|split documents/.test(text)) return 'outil';
+  if (/figma|dribbble|behance|awwwards|design|ui|ux|branding|typography|colour|palette/.test(text)) return 'design';
+  if (/photo|photography|unsplash|pexels|pixabay|flickr|lightroom|camera/.test(text)) return 'photo';
   if (/reddit|twitter|x\.com|instagram|tiktok|linkedin|mastodon|bluesky|social/.test(text)) return 'social';
   if (/hacker.news|lobste|techcrunch|theverge|wired|arstechnica|news|actualit/.test(text)) return 'news';
-  if (/spotify|soundcloud|deezer|bandcamp|music|musique|song|album|artist|playlist/.test(text)) return 'musique';
   if (/amazon|ebay|etsy|shop|store|buy|achat|boutique|market/.test(text)) return 'shopping';
   if (/docs|documentation|reference|mdn|wiki|manual|guide|spec/.test(text)) return 'ref';
-  if (/convert|compress|resize|edit|generate|tool|outil|calc|pdf|img|merge/.test(text)) return 'outil';
   if (/game|gaming|steam|jeu|jouer|playstation|xbox|nintendo|esport/.test(text)) return 'jeux';
   if (/crypto|bitcoin|ethereum|blockchain|nft|defi|coin/.test(text)) return 'crypto';
   if (/learn|course|tutorial|formation|apprendre|udemy|coursera|education/.test(text)) return 'apprendre';
@@ -354,15 +354,13 @@ function href(url) {
   return url.startsWith('http') ? url : 'https://' + url;
 }
 
-// Applique guessTag sur les bookmarks sans tag (utilise title/desc existants)
-let tagsAdded = false;
+// Recalcule les tags sur tous les bookmarks (corrige les mauvais tags de l'API)
+let tagsChanged = false;
 bookmarks.forEach(b => {
-  if (!b.tag) {
-    const t = guessTag(b.url, { title: b.title, description: b.desc });
-    if (t) { b.tag = t; tagsAdded = true; }
-  }
+  const t = guessTag(b.url, { title: b.title, description: b.desc });
+  if (t && t !== b.tag) { b.tag = t; tagsChanged = true; }
 });
-if (tagsAdded) save();
+if (tagsChanged) save();
 
 function renderTags() {
   const tags = [...new Set(bookmarks.map(b => b.tag).filter(Boolean))];
