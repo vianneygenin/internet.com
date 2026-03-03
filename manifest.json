@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "INTERNET.COM",
+  "version": "1.0",
+  "description": "Bookmark manager",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "icon.svg"
+  },
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["https://vianneygenin.github.io/*"],
+  "content_scripts": [{
+    "matches": ["https://vianneygenin.github.io/internet.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }]
+}
