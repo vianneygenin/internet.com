@@ -399,7 +399,7 @@ function render() {
     li.dataset.id = b.id;
     li.innerHTML = `
       <span class="item-text">
-        <span class="item-url">${esc(b.url)}</span>
+        <span class="item-url">${esc(b.url.replace(/^https?:\/\/(www\.)?/, ''))}</span>
       </span>
       <span class="item-actions">
         <button class="btn-copy" data-id="${b.id}">c</button>
