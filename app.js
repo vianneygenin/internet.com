@@ -250,6 +250,7 @@ addBtn.onclick = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       if (tabs[0]) handlePasteUrl(tabs[0].url);
     });
+    addBtn.blur();
     return;
   }
   const form = document.createElement('div');
