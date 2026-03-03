@@ -246,6 +246,12 @@ function handlePasteUrl(url) {
 }
 
 addBtn.onclick = () => {
+  if (IS_EXT && chrome.tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (tabs[0]) handlePasteUrl(tabs[0].url);
+    });
+    return;
+  }
   const form = document.createElement('div');
   form.className = 'inline-form';
   form.innerHTML = `
@@ -408,17 +414,6 @@ if (!IS_EXT) {
 
   renderTags();
   render();
-
-  const saveTabBtn = document.getElementById('save-tab-btn');
-  if (IS_EXT && chrome.tabs) {
-    saveTabBtn.onclick = () => {
-      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        if (tabs[0]) handlePasteUrl(tabs[0].url);
-      });
-    };
-  } else {
-    saveTabBtn.style.display = 'none';
-  }
 
   const toFetch = bookmarks.filter(b => !b.title && !b.desc);
   if (toFetch.length) {
