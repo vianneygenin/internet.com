@@ -48,12 +48,13 @@ const faviconEl = document.getElementById('favicon');
 const faviconDark  = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48Y2lyY2xlIGN4PSc1MCcgY3k9JzUwJyByPSc0MCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjZmZmJyBzdHJva2Utd2lkdGg9JzEwJy8+PC9zdmc+';
 const faviconLight = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48Y2lyY2xlIGN4PSc1MCcgY3k9JzUwJyByPSc0MCcgZmlsbD0nbm9uZScgc3Ryb2tlPScjMDAwJyBzdHJva2Utd2lkdGg9JzEwJy8+PC9zdmc+';
 
-function updateExtIcon(theme) {
+function updateExtIcon() {
   if (!IS_EXT || !chrome.action?.setIcon) return;
   const size = 32;
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = theme === 'light' ? '#111' : '#eee';
+  const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx.strokeStyle = osDark ? '#eee' : '#111';
   ctx.lineWidth = 3.2;
   ctx.beginPath();
   ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
@@ -63,8 +64,7 @@ function updateExtIcon(theme) {
 
 const applyTheme = t => {
   document.body.classList.toggle('light', t === 'light');
-  faviconEl.href = t === 'light' ? faviconDark : faviconLight;
-  updateExtIcon(t);
+  faviconEl.href = t === 'light' ? faviconLight : faviconDark;
 };
 
 const save = () => setStorage('bookmarks', bookmarks);
@@ -427,6 +427,9 @@ if (!IS_EXT) {
       }
     });
   }
+
+  updateExtIcon();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateExtIcon);
 
   renderTags();
   render();
