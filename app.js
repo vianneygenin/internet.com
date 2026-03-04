@@ -75,7 +75,15 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function cleanUrl(url) { return url.trim().replace(/\/+$/, ''); }
+function cleanUrl(url) {
+  url = url.trim();
+  try {
+    const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+    return u.hostname;
+  } catch {
+    return url.replace(/^https?:\/\//, '').split('/')[0].split('?')[0];
+  }
+}
 function href(url) { return url.startsWith('http') ? url : 'https://' + url; }
 
 async function fetchMeta(url) {
