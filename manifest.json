@@ -14,7 +14,7 @@
   "commands": {
     "open-popup": {
       "suggested_key": { "default": "Alt+Shift+I", "mac": "Alt+Shift+I" },
-      "description": "Ouvrir INTERNET.COM"
+      "description": "Sauvegarder l'onglet actif"
     }
   },
   "host_permissions": ["https://vianneygenin.github.io/*"],
