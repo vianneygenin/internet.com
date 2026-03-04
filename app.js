@@ -16,6 +16,7 @@ function setStorage(key, value) {
   } else {
     localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
     if (key === 'bookmarks') window.postMessage({type: 'IC_SAVE', bookmarks: value}, '*');
+    if (key === 'theme') window.postMessage({type: 'IC_SAVE_THEME', theme: value}, '*');
   }
 }
 
@@ -388,9 +389,9 @@ sortBtn.onclick = () => {
 // Sync: reçoit les updates du content script (web uniquement)
 if (!IS_EXT) {
   window.addEventListener('message', e => {
-    if (e.source !== window || e.data?.type !== 'IC_UPDATE') return;
-    bookmarks = e.data.bookmarks;
-    renderTags(); render();
+    if (e.source !== window) return;
+    if (e.data?.type === 'IC_UPDATE') { bookmarks = e.data.bookmarks; renderTags(); render(); }
+    if (e.data?.type === 'IC_UPDATE_THEME') applyTheme(e.data.theme);
   });
 }
 
@@ -421,10 +422,9 @@ if (!IS_EXT) {
 
   if (IS_EXT) {
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area === 'local' && changes.bookmarks) {
-        bookmarks = changes.bookmarks.newValue;
-        renderTags(); render();
-      }
+      if (area !== 'local') return;
+      if (changes.bookmarks) { bookmarks = changes.bookmarks.newValue; renderTags(); render(); }
+      if (changes.theme) applyTheme(changes.theme.newValue);
     });
   }
 

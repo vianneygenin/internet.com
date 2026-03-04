@@ -4,10 +4,18 @@
   "version": "1.0",
   "description": "Bookmark manager",
   "action": {
-    "default_popup": "index.html",
     "default_icon": "icon.svg"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": ["tabs", "storage"],
+  "commands": {
+    "open-popup": {
+      "suggested_key": { "default": "Alt+Shift+I", "mac": "Alt+Shift+I" },
+      "description": "Ouvrir INTERNET.COM"
+    }
+  },
   "host_permissions": ["https://vianneygenin.github.io/*"],
   "content_scripts": [{
     "matches": ["https://vianneygenin.github.io/internet.com/*"],
