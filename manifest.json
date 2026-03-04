@@ -4,7 +4,6 @@
   "version": "1.0",
   "description": "Bookmark manager",
   "action": {
-    "default_popup": "index.html",
     "default_icon": "icon.svg"
   },
   "background": {
