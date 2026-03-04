@@ -1,4 +1,11 @@
-function cleanUrl(url) { return url.trim().replace(/\/+$/, ''); }
+function cleanUrl(url) {
+  url = url.trim();
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url.replace(/^https?:\/\//, '').split('/')[0].split('?')[0];
+  }
+}
 
 async function setIcon() {
   const { theme = 'dark' } = await chrome.storage.local.get('theme');
