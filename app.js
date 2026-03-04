@@ -363,6 +363,7 @@ document.addEventListener('paste', e => {
 
 document.addEventListener('keydown', e => {
   if (document.activeElement.tagName === 'INPUT') return;
+  if (e.key === 'Escape' && IS_EXT) { window.close(); return; }
   const key = e.key.toLowerCase();
   if ((e.metaKey || e.ctrlKey) && key === 'v') {
     navigator.clipboard.readText().then(handlePasteUrl).catch(() => {});
