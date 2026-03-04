@@ -54,8 +54,8 @@ function updateExtIcon() {
   const size = 32;
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
-  const osDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  ctx.strokeStyle = osDark ? '#eee' : '#111';
+  const isLight = document.body.classList.contains('light');
+  ctx.strokeStyle = isLight ? '#eee' : '#111';
   ctx.lineWidth = 3.2;
   ctx.beginPath();
   ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
@@ -66,6 +66,7 @@ function updateExtIcon() {
 const applyTheme = t => {
   document.body.classList.toggle('light', t === 'light');
   faviconEl.href = t === 'light' ? faviconLight : faviconDark;
+  updateExtIcon();
 };
 
 const save = () => setStorage('bookmarks', bookmarks);
@@ -263,7 +264,7 @@ function handlePasteUrl(url) {
 
 addBtn.onclick = () => {
   if (IS_EXT && chrome.tabs) {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
       if (tabs[0]) handlePasteUrl(tabs[0].url);
     });
     addBtn.blur();
@@ -429,7 +430,6 @@ if (!IS_EXT) {
   }
 
   updateExtIcon();
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateExtIcon);
 
   renderTags();
   render();
