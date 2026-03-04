@@ -176,7 +176,7 @@ function render() {
   });
   if (sortMode === 1) filtered.sort((a, b) => a.url.length - b.url.length);
   else if (sortMode === 2) filtered.sort((a, b) => b.id - a.id);
-  else if (sortMode === 3) filtered.sort((a, b) => b.url.length - a.url.length);
+  else if (sortMode === 3) filtered.sort((a, b) => a.url.localeCompare(b.url));
 
   list.innerHTML = '';
 
