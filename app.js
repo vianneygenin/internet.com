@@ -29,6 +29,7 @@ async function getStorage(key) {
 }
 
 let bookmarks = [];
+let undoStack = [];
 let query = '';
 let activeTag = null;
 let sortMode = 0;
@@ -70,6 +71,7 @@ const applyTheme = t => {
 };
 
 const save = () => setStorage('bookmarks', bookmarks);
+const pushUndo = () => { undoStack.push([...bookmarks]); if (undoStack.length > 20) undoStack.shift(); };
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -240,6 +242,7 @@ function startEdit(id, li) {
 }
 
 function deleteBM(id) {
+  pushUndo();
   bookmarks = bookmarks.filter(b => b.id !== id);
   save(); renderTags(); render();
 }
@@ -365,6 +368,10 @@ document.addEventListener('keydown', e => {
   if (document.activeElement.tagName === 'INPUT') return;
   if (e.key === 'Escape' && IS_EXT) { window.close(); return; }
   const key = e.key.toLowerCase();
+  if ((e.metaKey || e.ctrlKey) && key === 'z') {
+    if (undoStack.length) { bookmarks = undoStack.pop(); save(); renderTags(); render(); }
+    return;
+  }
   if ((e.metaKey || e.ctrlKey) && key === 'v') {
     navigator.clipboard.readText().then(handlePasteUrl).catch(() => {});
     return;
@@ -375,6 +382,7 @@ document.addEventListener('keydown', e => {
     if (key === 'e') { e.preventDefault(); const li = hoveredLi; startEdit(hoveredId, li); return; }
   }
   if ((e.key === 'Delete' || e.key === 'Backspace') && selected.size > 0) {
+    pushUndo();
     bookmarks = bookmarks.filter(b => !selected.has(b.id));
     selected.clear();
     save(); renderTags(); render();
