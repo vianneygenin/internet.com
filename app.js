@@ -176,9 +176,9 @@ function render() {
     const matchQ = !q || [b.url, b.tag, b.title, b.desc].filter(Boolean).some(v => v.toLowerCase().includes(q));
     return matchTag && matchQ;
   });
-  if (sortMode === 1) filtered.sort((a, b) => a.url.length - b.url.length);
+  if (sortMode === 1) filtered.sort((a, b) => cleanUrl(a.url).length - cleanUrl(b.url).length);
   else if (sortMode === 2) filtered.sort((a, b) => b.id - a.id);
-  else if (sortMode === 3) filtered.sort((a, b) => a.url.localeCompare(b.url));
+  else if (sortMode === 3) filtered.sort((a, b) => cleanUrl(a.url).localeCompare(cleanUrl(b.url)));
 
   list.innerHTML = '';
 
