@@ -55,7 +55,7 @@ function updateExtIcon() {
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
   const isLight = document.body.classList.contains('light');
-  ctx.strokeStyle = isLight ? '#eee' : '#111';
+  ctx.strokeStyle = isLight ? '#111' : '#eee';
   ctx.lineWidth = 3.2;
   ctx.beginPath();
   ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
@@ -174,8 +174,8 @@ function render() {
     const matchQ = !q || [b.url, b.tag, b.title, b.desc].filter(Boolean).some(v => v.toLowerCase().includes(q));
     return matchTag && matchQ;
   });
-  if (sortMode === 1) filtered.sort((a, b) => b.id - a.id);
-  else if (sortMode === 2) filtered.sort((a, b) => a.url.length - b.url.length);
+  if (sortMode === 1) filtered.sort((a, b) => a.url.length - b.url.length);
+  else if (sortMode === 2) filtered.sort((a, b) => b.id - a.id);
   else if (sortMode === 3) filtered.sort((a, b) => b.url.length - a.url.length);
 
   list.innerHTML = '';
