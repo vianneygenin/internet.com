@@ -1,5 +1,25 @@
 function cleanUrl(url) { return url.trim().replace(/\/+$/, ''); }
 
+async function setIcon() {
+  const { theme = 'dark' } = await chrome.storage.local.get('theme');
+  const size = 32;
+  const canvas = new OffscreenCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = theme === 'light' ? '#111' : '#eee';
+  ctx.lineWidth = 3.2;
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size * 0.38, 0, Math.PI * 2);
+  ctx.stroke();
+  chrome.action.setIcon({ imageData: ctx.getImageData(0, 0, size, size) });
+}
+
+chrome.runtime.onInstalled.addListener(setIcon);
+chrome.runtime.onStartup.addListener(setIcon);
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.theme) setIcon();
+});
+setIcon();
+
 chrome.action.onClicked.addListener(async (tab) => {
   const url = tab.url;
   if (!url || /^(chrome|chrome-extension|about|edge):/.test(url)) return;
